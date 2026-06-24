@@ -2,125 +2,505 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ludo Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Premium Ludo Game - Play with friends, compete online, and win rewards!">
+    <title>Ludo King - Play Online & With Friends</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="object/title.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- PWA Install Prompt -->
+    <div id="installPrompt" class="install-prompt" style="display: none;">
+        <p>Install Ludo King on your device</p>
+        <button onclick="installApp()">Install</button>
+        <button onclick="dismissInstall()">Not Now</button>
+    </div>
+
+    <!-- Main Container -->
     <div id="gameContainer" class="game-container">
-        <!-- Loading Screen -->
-        <div id="loadingScreen" class="screen loading-screen">
-            <div class="loading-animation">
-                <img id="loadingImg" src="loading/1.png" alt="Loading..." class="loading-img">
-                <p>Loading Game...</p>
-            </div>
-        </div>
-
-        <!-- Main Menu -->
-        <div id="mainMenu" class="screen main-menu" style="display: none;">
-            <img src="object/title.png" alt="Ludo" class="title-img">
-            <button class="menu-btn" onclick="startGameMenu()">New Game</button>
-            <button class="menu-btn" onclick="showCredits()">How to Play</button>
-            <button class="menu-btn" onclick="toggleMusic()">
-                <span id="musicBtnText">🔊 Music ON</span>
-            </button>
-        </div>
-
-        <!-- Player Selection Screen -->
-        <div id="playerSelection" class="screen player-select" style="display: none;">
-            <h1>Select Number of Players</h1>
-            <div class="player-buttons">
-                <button class="player-btn" onclick="startGame(2)">2 Players</button>
-                <button class="player-btn" onclick="startGame(3)">3 Players</button>
-                <button class="player-btn" onclick="startGame(4)">4 Players</button>
-            </div>
-            <button class="back-btn" onclick="backToMenu()">Back</button>
-        </div>
-
-        <!-- Game Screen -->
-        <div id="gameScreen" class="screen game-screen" style="display: none;">
-            <div class="game-content">
-                <div class="top-bar">
-                    <div class="player-info">
-                        <span id="currentPlayer" class="current-player">Player 1's Turn</span>
-                        <span id="diceValue" class="dice-value">Dice: 0</span>
+        <!-- SCREEN 1: SPLASH SCREEN -->
+        <div id="splashScreen" class="screen splash-screen">
+            <div class="splash-content">
+                <div class="splash-logo">
+                    <img src="object/title.png" alt="Ludo King" class="logo-img">
+                </div>
+                <div class="loading-spinner">
+                    <div class="spinner-circle"></div>
+                    <div class="spinner-circle" style="animation-delay: 0.2s;"></div>
+                    <div class="spinner-circle" style="animation-delay: 0.4s;"></div>
+                </div>
+                <div class="splash-progress">
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
                     </div>
-                    <button class="menu-btn-small" onclick="quitGame()">Quit</button>
+                    <p id="loadingText">Initializing Game...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: HOME SCREEN -->
+        <div id="homeScreen" class="screen home-screen" style="display: none;">
+            <div class="home-bg">
+                <img src="object/ak_bg.jpg" alt="Background" class="bg-image">
+                <div class="particles"></div>
+            </div>
+
+            <div class="home-content">
+                <!-- Header -->
+                <div class="home-header">
+                    <div class="user-profile-mini">
+                        <div class="avatar-small" id="userAvatar">👤</div>
+                        <div class="profile-info-mini">
+                            <p class="username">Player</p>
+                            <p class="level">Level <span id="userLevel">1</span></p>
+                        </div>
+                    </div>
+                    <div class="header-stats">
+                        <div class="stat-item">
+                            <span class="coin-icon">💰</span>
+                            <span id="coinBalance">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="star-icon">⭐</span>
+                            <span id="xpBalance">0</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="game-board">
-                    <canvas id="gameCanvas" width="600" height="600"></canvas>
+                <!-- News Banner -->
+                <div class="news-banner">
+                    <div class="news-content">
+                        <span class="news-badge">New</span>
+                        <p>Tournament Mode Coming Soon! Get ready to compete.</p>
+                    </div>
+                </div>
+
+                <!-- Daily Rewards -->
+                <div class="daily-rewards-banner">
+                    <p>Daily Reward Available!</p>
+                    <button class="reward-btn" onclick="claimDailyReward()">Claim</button>
+                </div>
+
+                <!-- Main Menu Buttons -->
+                <div class="menu-buttons">
+                    <button class="menu-btn primary" onclick="startGameMenu()">
+                        <span class="btn-icon">🎮</span>
+                        <span class="btn-text">Play Now</span>
+                    </button>
+                    <button class="menu-btn" onclick="openOnlineMode()">
+                        <span class="btn-icon">🌐</span>
+                        <span class="btn-text">Play Online</span>
+                    </button>
+                    <button class="menu-btn" onclick="openFriendsMode()">
+                        <span class="btn-icon">👥</span>
+                        <span class="btn-text">With Friends</span>
+                    </button>
+                    <button class="menu-btn" onclick="openComputerMode()">
+                        <span class="btn-icon">🤖</span>
+                        <span class="btn-text">Vs Computer</span>
+                    </button>
+                    <button class="menu-btn" onclick="openTournament()">
+                        <span class="btn-icon">🏆</span>
+                        <span class="btn-text">Tournament</span>
+                    </button>
+                </div>
+
+                <!-- Bottom Navigation -->
+                <div class="bottom-nav">
+                    <button class="nav-btn" onclick="openLeaderboard()">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">Leaderboard</span>
+                    </button>
+                    <button class="nav-btn" onclick="openShop()">
+                        <span class="nav-icon">🛍️</span>
+                        <span class="nav-text">Shop</span>
+                    </button>
+                    <button class="nav-btn" onclick="openProfile()">
+                        <span class="nav-icon">👤</span>
+                        <span class="nav-text">Profile</span>
+                    </button>
+                    <button class="nav-btn" onclick="openSettings()">
+                        <span class="nav-icon">⚙️</span>
+                        <span class="nav-text">Settings</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: PLAYER SELECTION -->
+        <div id="playerSelectionScreen" class="screen player-selection" style="display: none;">
+            <img src="object/ak_playerselect.png" alt="Player Selection" class="selection-bg">
+            <div class="selection-overlay">
+                <div class="selection-content">
+                    <h1>Select Game Mode</h1>
                     
-                    <div class="dice-container">
-                        <button id="diceBtn" class="dice-button" onclick="rollDice()">
-                            <img id="diceImg" src="rotateobject/1.png" alt="Roll Dice">
+                    <div class="game-modes">
+                        <div class="mode-group">
+                            <h3>Number of Players</h3>
+                            <div class="mode-buttons">
+                                <button class="mode-btn" onclick="selectPlayers(2)">👥 2 Players</button>
+                                <button class="mode-btn" onclick="selectPlayers(3)">👥👥 3 Players</button>
+                                <button class="mode-btn" onclick="selectPlayers(4)">👥👥👥 4 Players</button>
+                            </div>
+                        </div>
+
+                        <div class="mode-group">
+                            <h3>Game Type</h3>
+                            <div class="mode-buttons">
+                                <button class="mode-btn" onclick="selectGameType('classic')">Classic</button>
+                                <button class="mode-btn" onclick="selectGameType('quick')">⚡ Quick</button>
+                                <button class="mode-btn" onclick="selectGameType('master')">👑 Master</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="back-btn" onclick="backToHome()">← Back</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: GAME LOBBY -->
+        <div id="gameLobbyScreen" class="screen game-lobby" style="display: none;">
+            <div class="lobby-header">
+                <h1>Game Lobby</h1>
+                <button class="close-btn" onclick="backToHome()">✕</button>
+            </div>
+
+            <div class="lobby-content">
+                <!-- Players -->
+                <div class="players-section">
+                    <h3>Players</h3>
+                    <div id="playersContainer" class="players-grid">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+
+                <!-- Room Info -->
+                <div class="room-info">
+                    <div class="info-item">
+                        <span>Room Code</span>
+                        <span id="roomCode" class="code">XXXX</span>
+                    </div>
+                    <div class="info-item">
+                        <span>Match Type</span>
+                        <span id="matchType">Classic</span>
+                    </div>
+                </div>
+
+                <!-- Chat -->
+                <div class="lobby-chat">
+                    <div id="chatMessages" class="chat-messages"></div>
+                    <div class="chat-input">
+                        <input type="text" placeholder="Say something...">
+                        <button>😊</button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="lobby-actions">
+                    <button class="action-btn invite" onclick="inviteFriends()">Invite Friends</button>
+                    <button class="action-btn start" onclick="startGameFromLobby()">Start Game</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 5: MAIN GAME BOARD -->
+        <div id="gameScreen" class="screen game-board-screen" style="display: none;">
+            <div class="game-top-bar">
+                <div class="turn-info">
+                    <p id="currentTurn">Player 1's Turn</p>
+                    <p id="turnTimer">00:30</p>
+                </div>
+                <div class="game-controls">
+                    <button class="control-btn" id="soundToggle" onclick="toggleGameSound()">🔊</button>
+                    <button class="control-btn" onclick="openGameMenu()">⋮</button>
+                </div>
+            </div>
+
+            <div class="game-main">
+                <!-- Board -->
+                <div class="board-container">
+                    <img src="object/ak_board.png" alt="Ludo Board" class="board-image">
+                    <canvas id="gameCanvas" class="game-canvas"></canvas>
+                </div>
+
+                <!-- Dice and Info -->
+                <div class="game-bottom-bar">
+                    <div class="dice-section">
+                        <button id="diceBtn" class="dice-btn" onclick="rollDice()">
+                            <img id="diceImg" src="rotateobject/1.png" alt="Dice">
+                        </button>
+                        <p id="diceResult">Roll Dice</p>
+                    </div>
+
+                    <div class="stats-section">
+                        <div id="playerStats" class="player-stats-mini"></div>
+                    </div>
+
+                    <div class="quick-actions">
+                        <button class="action-icon" onclick="openGameChat()">💬</button>
+                        <button class="action-icon" onclick="undoMove()">↶</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 6: RESULT SCREEN -->
+        <div id="resultScreen" class="screen result-screen" style="display: none;">
+            <img src="object/ak_resultpanel.png" alt="Result Panel" class="result-bg">
+            <div class="result-overlay">
+                <div class="result-content">
+                    <h1 id="resultTitle">You Won! 🎉</h1>
+
+                    <div class="ranking-table">
+                        <div id="resultRanking"></div>
+                    </div>
+
+                    <div class="match-rewards">
+                        <div class="reward-item">
+                            <span class="reward-icon">💰</span>
+                            <span id="coinReward">+500</span>
+                        </div>
+                        <div class="reward-item">
+                            <span class="reward-icon">⭐</span>
+                            <span id="xpReward">+250</span>
+                        </div>
+                    </div>
+
+                    <div class="match-stats">
+                        <p>Match Duration: <span id="matchDuration">15:45</span></p>
+                        <p>Pawns Captured: <span id="pawnsCaptured">3</span></p>
+                        <p>Highest Roll: <span id="highestRoll">6</span></p>
+                    </div>
+
+                    <div class="result-buttons">
+                        <button class="result-btn primary" onclick="playAgain()">Play Again</button>
+                        <button class="result-btn" onclick="shareResult()">Share</button>
+                        <button class="result-btn" onclick="backToHome()">Home</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 7: SETTINGS -->
+        <div id="settingsScreen" class="screen settings-screen" style="display: none;">
+            <div class="settings-header">
+                <h1>Settings</h1>
+                <button class="close-btn" onclick="closeSettings()">✕</button>
+            </div>
+
+            <div class="settings-content">
+                <div class="settings-group">
+                    <h3>Sound & Music</h3>
+                    <div class="setting-item">
+                        <span>Background Music</span>
+                        <button class="toggle-btn" id="musicToggle" onclick="toggleMusic()">
+                            <img id="musicIcon" src="object/ak_music_on.png" alt="Music">
+                        </button>
+                    </div>
+                    <div class="setting-item">
+                        <span>Sound Effects</span>
+                        <button class="toggle-btn" id="sfxToggle" onclick="toggleSFX()">
+                            <span>On</span>
                         </button>
                     </div>
                 </div>
 
-                <div class="game-info">
-                    <div id="playerStats" class="player-stats"></div>
+                <div class="settings-group">
+                    <h3>Gameplay</h3>
+                    <div class="setting-item">
+                        <span>Auto Play</span>
+                        <button class="toggle-btn" id="autoPlayToggle" onclick="toggleAutoPlay()">
+                            <span>Off</span>
+                        </button>
+                    </div>
+                    <div class="setting-item">
+                        <span>Animations</span>
+                        <button class="toggle-btn" id="animToggle" onclick="toggleAnimations()">
+                            <span>On</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <h3>Display</h3>
+                    <div class="setting-item">
+                        <span>Theme</span>
+                        <select class="select-input" onchange="changeTheme(this.value)">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="auto">Auto</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>Language</span>
+                        <select class="select-input" onchange="changeLanguage(this.value)">
+                            <option value="en">English</option>
+                            <option value="hi">हिंदी</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <h3>Notifications</h3>
+                    <div class="setting-item">
+                        <span>Push Notifications</span>
+                        <button class="toggle-btn" id="notifToggle" onclick="toggleNotifications()">
+                            <span>On</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button class="danger-btn" onclick="resetGame()">Reset Game</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 8: PROFILE -->
+        <div id="profileScreen" class="screen profile-screen" style="display: none;">
+            <div class="profile-header">
+                <button class="back-btn" onclick="backToHome()">← Back</button>
+            </div>
+
+            <div class="profile-content">
+                <div class="profile-card">
+                    <div class="profile-avatar-large">👤</div>
+                    <h1 id="profileUsername">Player</h1>
+                    <p class="profile-level">Level <span id="profileLevel">1</span></p>
+                </div>
+
+                <div class="profile-stats">
+                    <div class="stat-box">
+                        <p class="stat-value" id="totalWins">0</p>
+                        <p class="stat-label">Wins</p>
+                    </div>
+                    <div class="stat-box">
+                        <p class="stat-value" id="totalLosses">0</p>
+                        <p class="stat-label">Losses</p>
+                    </div>
+                    <div class="stat-box">
+                        <p class="stat-value" id="winRate">0%</p>
+                        <p class="stat-label">Win Rate</p>
+                    </div>
+                </div>
+
+                <div class="profile-tabs">
+                    <button class="tab-btn active" onclick="switchTab('history')">Match History</button>
+                    <button class="tab-btn" onclick="switchTab('achievements')">Achievements</button>
+                </div>
+
+                <div id="historyTab" class="tab-content active">
+                    <div id="matchHistoryList" class="match-history"></div>
+                </div>
+
+                <div id="achievementsTab" class="tab-content" style="display: none;">
+                    <div class="achievements-grid">
+                        <!-- Dynamically populated -->
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Result Screen -->
-        <div id="resultScreen" class="screen result-screen" style="display: none;">
-            <img src="object/ak_resultpanel.png" alt="Result Panel" class="result-panel-img">
-            <div class="result-content">
-                <h1 id="resultTitle">Player Won!</h1>
-                <div id="resultRanking" class="result-ranking"></div>
-                <button class="menu-btn" onclick="playAgain()">Play Again</button>
-                <button class="menu-btn" onclick="backToMenu()">Back to Menu</button>
+        <!-- SCREEN 9: SHOP -->
+        <div id="shopScreen" class="screen shop-screen" style="display: none;">
+            <div class="shop-header">
+                <h1>Shop</h1>
+                <button class="close-btn" onclick="backToHome()">✕</button>
+            </div>
+
+            <div class="shop-content">
+                <div class="shop-tabs">
+                    <button class="shop-tab-btn active" onclick="switchShopTab('dice')">Dice Skins</button>
+                    <button class="shop-tab-btn" onclick="switchShopTab('board')">Board Skins</button>
+                    <button class="shop-tab-btn" onclick="switchShopTab('pawn')">Pawn Skins</button>
+                    <button class="shop-tab-btn" onclick="switchShopTab('emote')">Emotes</button>
+                </div>
+
+                <div id="shopItemsContainer" class="shop-items-grid">
+                    <!-- Dynamically populated -->
+                </div>
             </div>
         </div>
 
-        <!-- Rules Screen -->
-        <div id="rulesScreen" class="screen rules-screen" style="display: none;">
-            <div class="rules-content">
-                <h1>How to Play Ludo</h1>
-                <div class="rules-text">
-                    <h3>Game Objective</h3>
-                    <p>Be the first player to move all four pawns from your home to the finish area.</p>
+        <!-- SCREEN 10: LEADERBOARD -->
+        <div id="leaderboardScreen" class="screen leaderboard-screen" style="display: none;">
+            <div class="leaderboard-header">
+                <h1>Global Leaderboard</h1>
+                <button class="close-btn" onclick="backToHome()">✕</button>
+            </div>
 
-                    <h3>Setup</h3>
-                    <ul>
-                        <li>2-4 players can play</li>
-                        <li>Each player has 4 pawns of their color</li>
-                        <li>Pawns start in the home area</li>
-                    </ul>
-
-                    <h3>Basic Rules</h3>
-                    <ul>
-                        <li><strong>Rolling the Dice:</strong> Players take turns rolling the dice</li>
-                        <li><strong>Moving Out:</strong> You need to roll a 6 to move a pawn out of home</li>
-                        <li><strong>Extra Turn:</strong> Rolling a 6 gives you another roll</li>
-                        <li><strong>Movement:</strong> Move your pawn the number of squares shown on the dice</li>
-                        <li><strong>Capturing:</strong> Land on opponent's pawn to send them home</li>
-                        <li><strong>Safe Zones:</strong> Certain squares are safe from capturing</li>
-                        <li><strong>Home Stretch:</strong> Once all pawns are out, move them into the finish area</li>
-                        <li><strong>Winning:</strong> First player to get all pawns to finish wins!</li>
-                    </ul>
-
-                    <h3>Special Rules</h3>
-                    <ul>
-                        <li>You can only move if you have at least one pawn out or roll a 6</li>
-                        <li>You cannot block with multiple pawns on the same square</li>
-                        <li>Maximum 3 consecutive turns (only with extra rolls from 6s)</li>
-                    </ul>
+            <div class="leaderboard-content">
+                <div class="leaderboard-tabs">
+                    <button class="lb-tab-btn active" onclick="switchLeaderboardTab('weekly')">Weekly</button>
+                    <button class="lb-tab-btn" onclick="switchLeaderboardTab('monthly')">Monthly</button>
+                    <button class="lb-tab-btn" onclick="switchLeaderboardTab('alltime')">All Time</button>
                 </div>
-                <button class="back-btn" onclick="backToMenu()">Back to Menu</button>
+
+                <div id="leaderboardList" class="leaderboard-list">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Menu Overlay -->
+        <div id="gameMenuOverlay" class="overlay" style="display: none;" onclick="closeGameMenu()">
+            <div class="game-menu-popup" onclick="event.stopPropagation()">
+                <button onclick="resumeGame()">Resume</button>
+                <button onclick="showGameRules()">Rules</button>
+                <button onclick="quitGame()">Quit</button>
+            </div>
+        </div>
+
+        <!-- Rules Popup -->
+        <div id="rulesPopup" class="overlay" style="display: none;" onclick="closeRules()">
+            <div class="rules-modal" onclick="event.stopPropagation()">
+                <div class="rules-header">
+                    <h2>Ludo Rules</h2>
+                    <button class="close-btn" onclick="closeRules()">✕</button>
+                </div>
+                <div class="rules-content">
+                    <div class="rule">
+                        <h4>Rule 1: Roll to Unlock</h4>
+                        <p>You must roll a 6 to move a pawn out of your home area.</p>
+                    </div>
+                    <div class="rule">
+                        <h4>Rule 2: Extra Turn</h4>
+                        <p>Rolling a 6 gives you an additional turn.</p>
+                    </div>
+                    <div class="rule">
+                        <h4>Rule 3: Three Strikes</h4>
+                        <p>Three consecutive 6s cancel your turn.</p>
+                    </div>
+                    <div class="rule">
+                        <h4>Rule 4: Capture</h4>
+                        <p>Land on an opponent's pawn to send it back home.</p>
+                    </div>
+                    <div class="rule">
+                        <h4>Rule 5: Safe Zones</h4>
+                        <p>Pawns on safe squares cannot be captured.</p>
+                    </div>
+                    <div class="rule">
+                        <h4>Rule 6: Exact Dice</h4>
+                        <p>You need the exact dice value to enter home.</p>
+                    </div>
+                    <div class="rule">
+                        <h4>Rule 7: Win Condition</h4>
+                        <p>First player to bring all 4 pawns home wins!</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <audio id="gameMusic" loop>
+    <!-- Audio Elements -->
+    <audio id="bgMusic" loop>
         <source src="music/singlered.ogg" type="audio/ogg">
     </audio>
-    <audio id="diceSound" preload="auto">
+    <audio id="diceRollSound" preload="auto">
         <source src="music/roling.ogg" type="audio/ogg">
     </audio>
-    <audio id="moveSound" preload="auto">
+    <audio id="pawnMoveSound" preload="auto">
         <source src="music/pawnswalkclock.ogg" type="audio/ogg">
     </audio>
     <audio id="captureSound" preload="auto">
@@ -130,6 +510,11 @@
         <source src="music/win.ogg" type="audio/ogg">
     </audio>
 
-    <script src="game.js"></script>
+    <script src="utils.js"></script>
+    <script src="audio-manager.js"></script>
+    <script src="animation-manager.js"></script>
+    <script src="game-logic.js"></script>
+    <script src="multiplayer.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
