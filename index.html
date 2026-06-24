@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ludo Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="gameContainer" class="game-container">
+        <!-- Loading Screen -->
+        <div id="loadingScreen" class="screen loading-screen">
+            <div class="loading-animation">
+                <img id="loadingImg" src="loading/1.png" alt="Loading..." class="loading-img">
+                <p>Loading Game...</p>
+            </div>
+        </div>
+
+        <!-- Main Menu -->
+        <div id="mainMenu" class="screen main-menu" style="display: none;">
+            <img src="object/title.png" alt="Ludo" class="title-img">
+            <button class="menu-btn" onclick="startGameMenu()">New Game</button>
+            <button class="menu-btn" onclick="showCredits()">How to Play</button>
+            <button class="menu-btn" onclick="toggleMusic()">
+                <span id="musicBtnText">🔊 Music ON</span>
+            </button>
+        </div>
+
+        <!-- Player Selection Screen -->
+        <div id="playerSelection" class="screen player-select" style="display: none;">
+            <h1>Select Number of Players</h1>
+            <div class="player-buttons">
+                <button class="player-btn" onclick="startGame(2)">2 Players</button>
+                <button class="player-btn" onclick="startGame(3)">3 Players</button>
+                <button class="player-btn" onclick="startGame(4)">4 Players</button>
+            </div>
+            <button class="back-btn" onclick="backToMenu()">Back</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="screen game-screen" style="display: none;">
+            <div class="game-content">
+                <div class="top-bar">
+                    <div class="player-info">
+                        <span id="currentPlayer" class="current-player">Player 1's Turn</span>
+                        <span id="diceValue" class="dice-value">Dice: 0</span>
+                    </div>
+                    <button class="menu-btn-small" onclick="quitGame()">Quit</button>
+                </div>
+
+                <div class="game-board">
+                    <canvas id="gameCanvas" width="600" height="600"></canvas>
+                    
+                    <div class="dice-container">
+                        <button id="diceBtn" class="dice-button" onclick="rollDice()">
+                            <img id="diceImg" src="rotateobject/1.png" alt="Roll Dice">
+                        </button>
+                    </div>
+                </div>
+
+                <div class="game-info">
+                    <div id="playerStats" class="player-stats"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="resultScreen" class="screen result-screen" style="display: none;">
+            <img src="object/ak_resultpanel.png" alt="Result Panel" class="result-panel-img">
+            <div class="result-content">
+                <h1 id="resultTitle">Player Won!</h1>
+                <div id="resultRanking" class="result-ranking"></div>
+                <button class="menu-btn" onclick="playAgain()">Play Again</button>
+                <button class="menu-btn" onclick="backToMenu()">Back to Menu</button>
+            </div>
+        </div>
+
+        <!-- Rules Screen -->
+        <div id="rulesScreen" class="screen rules-screen" style="display: none;">
+            <div class="rules-content">
+                <h1>How to Play Ludo</h1>
+                <div class="rules-text">
+                    <h3>Game Objective</h3>
+                    <p>Be the first player to move all four pawns from your home to the finish area.</p>
+
+                    <h3>Setup</h3>
+                    <ul>
+                        <li>2-4 players can play</li>
+                        <li>Each player has 4 pawns of their color</li>
+                        <li>Pawns start in the home area</li>
+                    </ul>
+
+                    <h3>Basic Rules</h3>
+                    <ul>
+                        <li><strong>Rolling the Dice:</strong> Players take turns rolling the dice</li>
+                        <li><strong>Moving Out:</strong> You need to roll a 6 to move a pawn out of home</li>
+                        <li><strong>Extra Turn:</strong> Rolling a 6 gives you another roll</li>
+                        <li><strong>Movement:</strong> Move your pawn the number of squares shown on the dice</li>
+                        <li><strong>Capturing:</strong> Land on opponent's pawn to send them home</li>
+                        <li><strong>Safe Zones:</strong> Certain squares are safe from capturing</li>
+                        <li><strong>Home Stretch:</strong> Once all pawns are out, move them into the finish area</li>
+                        <li><strong>Winning:</strong> First player to get all pawns to finish wins!</li>
+                    </ul>
+
+                    <h3>Special Rules</h3>
+                    <ul>
+                        <li>You can only move if you have at least one pawn out or roll a 6</li>
+                        <li>You cannot block with multiple pawns on the same square</li>
+                        <li>Maximum 3 consecutive turns (only with extra rolls from 6s)</li>
+                    </ul>
+                </div>
+                <button class="back-btn" onclick="backToMenu()">Back to Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="gameMusic" loop>
+        <source src="music/singlered.ogg" type="audio/ogg">
+    </audio>
+    <audio id="diceSound" preload="auto">
+        <source src="music/roling.ogg" type="audio/ogg">
+    </audio>
+    <audio id="moveSound" preload="auto">
+        <source src="music/pawnswalkclock.ogg" type="audio/ogg">
+    </audio>
+    <audio id="captureSound" preload="auto">
+        <source src="music/tap.ogg" type="audio/ogg">
+    </audio>
+    <audio id="winSound" preload="auto">
+        <source src="music/win.ogg" type="audio/ogg">
+    </audio>
+
+    <script src="game.js"></script>
+</body>
+</html>
